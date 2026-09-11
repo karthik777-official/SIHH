@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NII | National Intelligence & Investigation - AI-Powered Criminal Network Analysis System</title>
+  
+  <!-- Vis.js Network Visualization Library (Standalone CDN with pure Canvas Fallback) -->
+  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+  <!-- ===================================================================
+       PAGE 1: LOGIN / SECURE FORENSIC ACCESS PORTAL
+       Divided into Navy Blue (Left) and White (Right) with a smooth organic curve
+       =================================================================== -->
+  <div id="login-view" class="login-container">
+    
+    <!-- LEFT PANEL: NAVY BLUE BACKGROUND -->
+    <div class="login-left-pane">
+      <!-- Smooth SVG Dividing Curve -->
+      <svg class="curved-divider-svg" viewBox="0 0 100 1000" preserveAspectRatio="none">
+        <path d="M 0,0 C 60,300 95,650 0,1000 L 0,1000 L 0,0 Z" fill="#0a192f"/>
+      </svg>
+
+      <div class="left-brand-content">
+        <!-- 1st Image: NII Logo with transparent background (no white box) -->
+        <img src="assets/nii-uploaded-logo.jpg" alt="National Intelligence & Investigation Emblem" class="nii-hero-logo" id="main-nii-logo" onerror="this.src='assets/nii-logo.svg'">
+
+        <!-- NII in Heading Bold Times Font -->
+        <h1 class="brand-heading-times">NII</h1>
+
+        <!-- NATIONAL INTELLIGENCE & INVESTIGATION in clean sans-serif with generous spacing -->
+        <h2 class="brand-subheading-sans">National Intelligence & Investigation</h2>
+
+        <!-- Official Motto Quote -->
+        <blockquote class="brand-quote">
+          "United in surveillance, unbroken in security (NII)"
+        </blockquote>
+
+        <!-- Hackathon Demonstration Quick Fill Chips (Easy 1-click test for SIH Judges) -->
+        <div class="quick-demo-presets">
+          <div class="demo-presets-title">⚡ SIH Demo Quick Autofill:</div>
+          <div class="preset-badges-container">
+            <button type="button" class="preset-chip" onclick="fillPresetOfficer('Ajit Doval', 'DGP')">Ajit Doval (DGP)</button>
+            <button type="button" class="preset-chip" onclick="fillPresetOfficer('Vijay Salaskar', 'Sub-Inspector')">Vijay Salaskar (SI)</button>
+            <button type="button" class="preset-chip" onclick="fillPresetOfficer('Pradeep Sharma', 'ACP')">Pradeep Sharma (ACP)</button>
+            <button type="button" class="preset-chip" onclick="fillPresetOfficer('Sanjukta Parashar', 'SP')">Sanjukta Parashar (SP)</button>
+            <button type="button" class="preset-chip" onclick="fillPresetOfficer('Tukaram Omble', 'Constable')">Tukaram Omble (Constable)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: PURE WHITE BACKGROUND - SECURE FORENSIC ACCESS -->
+    <div class="login-right-pane">
+      <div class="forensic-form-wrapper">
+        <div class="form-header-box">
+          <span class="form-pre-badge">Government of India • Ministry of Home Affairs</span>
+          <h2 class="form-title">Secure Forensic Access</h2>
+          <p class="form-desc">Role-Based Access Control (RBAC) Biometric Authentication Portal</p>
+        </div>
+
+        <!-- Login Error Alert (Shown on RBAC mismatch) -->
+        <div id="login-error-alert" class="error-alert-box hidden"></div>
+
+        <!-- Forensic Access Form -->
+        <form class="forensic-form" onsubmit="handleForensicLogin(event)">
+          
+          <div class="form-row-2col">
+            <!-- Operational ID -->
+            <div class="form-group">
+              <label for="operational-id">Operational ID <span>*</span></label>
+              <input type="text" id="operational-id" class="forensic-input" placeholder="e.g. 1234567890 / 0987654321 / 12345 / 67890" required autocomplete="off">
+            </div>
+
+            <!-- Access Key (Must match Operational ID) -->
+            <div class="form-group">
+              <label for="access-key">Access Key <span>*</span></label>
+              <input type="password" id="access-key" class="forensic-input" placeholder="Must match Operational ID" required autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-row-2col">
+            <!-- Officer Full Name -->
+            <div class="form-group">
+              <label for="officer-name">Officer Full Name <span>*</span></label>
+              <select id="officer-name" class="forensic-input" required>
+                <option value="">-- Select Authorized Officer --</option>
+                <option value="Tukaram Omble">Tukaram Omble</option>
+                <option value="Daya Nayak">Daya Nayak</option>
+                <option value="Vijay Salaskar">Vijay Salaskar</option>
+                <option value="Pradeep Sharma">Pradeep Sharma</option>
+                <option value="Sanjukta Parashar">Sanjukta Parashar</option>
+                <option value="K.P.S. Gill">K.P.S. Gill</option>
+                <option value="Ajit Doval">Ajit Doval</option>
+              </select>
+            </div>
+
+            <!-- Status / Rank (RBAC Selection) -->
+            <div class="form-group">
+              <label for="officer-rank">Status / Rank <span>*</span></label>
+              <select id="officer-rank" class="forensic-input" required>
+                <option value="">-- Select Status --</option>
+                <option value="Constable">Constable</option>
+                <option value="Head Constable">Head Constable</option>
+                <option value="Sub-Inspector">Sub-Inspector</option>
+                <option value="ACP">ACP</option>
+                <option value="SP">SP</option>
+                <option value="IGP">IGP</option>
+                <option value="DGP">DGP</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Jurisdiction or Station Name (All Indian Police Stations) -->
+          <div class="form-group">
+            <label for="station-select">Jurisdiction / Station Name across India <span>*</span></label>
+            <select id="station-select" class="forensic-input" required>
+              <!-- Populated dynamically from stations-data.js -->
+            </select>
+          </div>
+
+          <!-- E-Captcha Verification -->
+          <div class="form-group">
+            <label for="captcha-input">E-Captcha Verification <span>*</span></label>
+            <div class="captcha-container">
+              <div class="captcha-box">
+                <canvas id="captcha-canvas" width="160" height="42"></canvas>
+              </div>
+              <button type="button" class="btn-refresh-captcha" onclick="generateCaptcha()" title="Refresh Captcha">🔄 Refresh</button>
+              <input type="text" id="captcha-input" class="forensic-input" placeholder="Type captcha code" maxlength="6" required autocomplete="off" style="max-width: 160px; text-transform: uppercase;">
+            </div>
+          </div>
+
+          <!-- Prominent Submit Button with Biometric Authentication Integration -->
+          <button type="submit" class="btn-submit-biometric">
+            <span class="fingerprint-icon">🔒</span>
+            <span>Verify Credentials & Authenticate Biometrics</span>
+          </button>
+
+          <!-- ⚠️ Alert Box: Restricted Government Forensic System -->
+          <div class="warning-alert-box">
+            <span class="warning-icon">⚠️</span>
+            <div class="warning-text">
+              <strong>RESTRICTED GOVERNMENT FORENSIC SYSTEM FOR AUTHORIZED PERSONNEL ONLY</strong>
+              <p>Unauthorized access, tampering, or dissemination of intelligence logs is strictly prohibited and punishable under Section 66 of the Information Technology Act, 2000 and Section 316 of Bharatiya Nyaya Sanhita (BNS).</p>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <footer class="login-footer">
+        <div>
+          <a href="#" class="footer-link" onclick="alert('NII Privacy Policy:\nAll queries are cryptographically recorded in an immutable SHA-256 blockchain ledger. Session keys terminate after 30 minutes.'); return false;">Privacy Policy</a> • 
+          <a href="#" class="footer-link" onclick="alert('NII National Help Desk:\nHelpline: 1800-NII-CYBER (Toll Free)\nEmail: helpdesk-forensics@nii.gov.in\nDirect Support: Special Cyber Command, New Delhi'); return false;">Help Desk Contact</a>
+        </div>
+        <div>SIH 2026 • Theme: Blockchain & Cybersecurity</div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       BIOMETRIC MULTI-FACTOR AUTHENTICATION MODAL (Simulated Scan)
+       =================================================================== -->
+  <div id="biometric-mfa-modal" class="modal-overlay hidden">
+    <div class="biometric-modal-card">
+      <h3>Biometric Verification Required</h3>
+      <p style="font-size: 0.8rem; color: #666; margin-top: 4px;">Multi-Factor Authentication via Minutiae & Retinal Match</p>
+      
+      <div class="bio-scanner-display">
+        <div class="bio-scan-line"></div>
+        <div class="bio-sensor-glyph">👆</div>
+      </div>
+
+      <div class="bio-progress-track">
+        <div id="bio-scan-progress" class="bio-progress-bar"></div>
+      </div>
+      <div id="bio-scan-status">Initializing biometric sensor...</div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       PAGE 2: MAIN DASHBOARD VIEW
+       =================================================================== -->
+  <div id="dashboard-view" class="dashboard-container hidden">
+
+    <!-- =========================================================
+         BAR 1: RED BACKGROUND (THIN TOP BAR)
+         ========================================================= -->
+    <header class="topbar-red">
+      <div class="redbar-left">
+        <!-- Logo without background/clearcut (transparent) -->
+        <img src="assets/nii-uploaded-logo.jpg" alt="NII Logo" class="redbar-logo" id="topbar-nii-logo" onerror="this.src='assets/nii-logo.svg'">
+        <span class="redbar-title">National Intelligence & Investigation</span>
+      </div>
+
+      <div class="redbar-right">
+        <!-- Suspect Search Input & Button -->
+        <div class="search-container">
+          <input type="text" id="suspect-search-input" class="search-input" placeholder="Enter suspect name...">
+          <button type="button" class="search-btn" onclick="performSuspectSearch(document.getElementById('suspect-search-input').value)">🔍 Search</button>
+        </div>
+
+        <!-- Notification Bell -->
+        <button class="notification-bell-btn" onclick="alert('NII Tactical Notifications:\n1. Auto Shankar cold case biometric correlation: 99.4% confidence.\n2. Threat radar active in Thiruvanmiyur Grid.\n3. Session timer countdown active.')" title="Notifications">
+          🔔
+          <span class="bell-badge">3</span>
+        </button>
+
+        <!-- 30-Minute Session Countdown Widget -->
+        <div class="session-timer-widget" title="Session auto-terminates after 30 minutes for security">
+          <span>⏳ Session:</span>
+          <span id="session-countdown-timer" class="timer-digits">30:00</span>
+          <button type="button" onclick="triggerSessionExpiryModal()" style="background:transparent; border:none; color:#ffcdd2; font-size:0.65rem; cursor:pointer;" title="Click to test session expiry modal for judges">[Test Expiry]</button>
+        </div>
+
+        <!-- Profile Button based on RBAC -->
+        <div class="profile-btn-rbac">
+          <div class="profile-avatar">🛡️</div>
+          <div class="profile-info">
+            <div id="profile-officer-name" class="profile-name">Ajit Doval</div>
+            <div id="profile-officer-rank" class="profile-role-tag">DGP | High Clearance</div>
+          </div>
+          <button type="button" class="btn-logout-small" onclick="handleLogout()" title="Logout of Forensic Portal">Exit</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- =========================================================
+         BAR 2: WHITE BACKGROUND (THINNER AUTO-MOVING TICKER BAR)
+         ========================================================= -->
+    <div class="topbar-white-ticker">
+      <!-- Left side: 💥 collision emoji bouncing (1-2cm) + "FLASH NEWS" in red colour with NO background -->
+      <div class="flash-news-badge" onclick="openHypotheticalThreatsDashboard()" style="cursor: pointer;" title="Click to open Full-Page Threat Command Center">
+        <span class="collision-emoji-bounce">💥</span>
+        <span class="flash-news-text">FLASH NEWS</span>
+      </div>
+
+      <!-- Moving/Scrolling track from Right to Left -->
+      <div class="ticker-track-container">
+        <div class="ticker-marquee-inner">
+          
+          <!-- Category 0: Hypothetical Threats (Full-Page Command Center) -->
+          <button class="ticker-btn ticker-btn-highlight" onclick="handleFlashCategoryClick('hypothetical', event)" style="background:#fee2e2; border-color:#ef4444; color:#b91c1c; font-weight:700;">
+            ⚠️ Hypothetical Threats (Full Dashboard)
+          </button>
+
+          <!-- Category 1: Women related cases -->
+          <button class="ticker-btn" onclick="handleFlashCategoryClick('women', event)">
+            🚨 Women Related Cases
+          </button>
+
+          <!-- Category 2: IPC/BNS cases -->
+          <button class="ticker-btn" onclick="handleFlashCategoryClick('ipc', event)">
+            ⚖️ IPC/BNS Cases ▼
+          </button>
+
+          <!-- Category 3: Cyber crimes (Occupies full screen size on click) -->
+          <button class="ticker-btn" onclick="handleFlashCategoryClick('cyber', event)">
+            💻 Cyber Crimes (Full Screen)
+          </button>
+
+          <!-- Category 4: SLL cases -->
+          <button class="ticker-btn" onclick="handleFlashCategoryClick('sll', event)">
+            📜 SLL Cases (Special & Local Laws) ▼
+          </button>
+
+          <!-- Category 5: Criminal cases (Occupies full screen size on click) -->
+          <button class="ticker-btn" onclick="handleFlashCategoryClick('criminal', event)">
+            🚨 Criminal Cases (Full Screen)
+          </button>
+
+          <!-- Category 6: Civil cases (Occupies full screen size on click) -->
+          <button class="ticker-btn" onclick="handleFlashCategoryClick('civil', event)">
+            📑 Civil Cases ▼
+          </button>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Subcategories Popover Box (Appears to the right of clicked button) -->
+    <div id="flash-subcat-popover" class="subcat-popover-box hidden"></div>
+
+    <!-- =========================================================
+         BAR 3: BLUE BACKGROUND (SIMILAR LENGTH & SIZE BAR)
+         Options: CDR Feed, ICJS Gateway, IPDR Stream, File an FIR, Vehicle track
+         ========================================================= -->
+    <div class="topbar-blue-feeds">
+      <span class="blue-bar-label">Intelligence Feeds:</span>
+      <button class="blue-bar-btn" data-feed="cdr" onclick="openBlueFeed('cdr')">📞 CDR Feed</button>
+      <button class="blue-bar-btn" data-feed="icjs" onclick="openBlueFeed('icjs')">🏛️ ICJS Gateway</button>
+      <button class="blue-bar-btn" data-feed="ipdr" onclick="openBlueFeed('ipdr')">🌐 IPDR Stream</button>
+      <button class="blue-bar-btn" data-feed="fir" onclick="openBlueFeed('fir')">📝 File an FIR</button>
+      <button class="blue-bar-btn" data-feed="vehicle" onclick="openBlueFeed('vehicle')">🛰️ Vehicle Track</button>
+      <button class="blue-bar-btn" style="margin-left: auto; background: rgba(0,0,0,0.25);" onclick="closeBlueFeed()">↩ Return to Main Workspace</button>
+    </div>
+
+    <!-- Active Suspect Target Banner -->
+    <div id="active-suspect-banner" class="suspect-header-ribbon">
+      <!-- Injected dynamically by app.js -->
+    </div>
+
+    <!-- =========================================================
+         DYNAMIC AREA: BLUE FEED VIEW (Occupies below area with white background when clicked)
+         ========================================================= -->
+    <div id="blue-feed-workspace" class="blue-feed-fullpane hidden">
+      <div id="blue-feed-content-area"></div>
+    </div>
+
+    <!-- =========================================================
+         DEFAULT VIEW: WHITE BACKGROUND (STRICTLY NO BLACK)
+         Left Panel (9 options in order) + Right Side Info Panel
+         ========================================================= -->
+    <div id="default-forensic-workspace" class="workspace-layout">
+      
+      <!-- LEFT SIDE PANEL: 9 OPTIONS IN STRICT ORDER -->
+      <!-- LEFT SIDE PANEL: 10 OPTIONS IN STRICT ORDER -->
+      <aside class="left-nav-sidebar">
+        <button class="nav-item active" data-tab="suspect-search" onclick="switchLeftTab('suspect-search')">
+          <span class="nav-item-icon">🔎</span>
+          <span>0. Suspect Search</span>
+        </button>
+        <button class="nav-item" data-tab="network-graph" onclick="switchLeftTab('network-graph')">
+          <span class="nav-item-icon">🕸️</span>
+          <span>1. Network Graph</span>
+        </button>
+        <button class="nav-item" data-tab="case-management" onclick="switchLeftTab('case-management')">
+          <span class="nav-item-icon">📂</span>
+          <span>2. Case Management</span>
+        </button>
+        <button class="nav-item" data-tab="evidence-locker" onclick="switchLeftTab('evidence-locker')">
+          <span class="nav-item-icon">🔒</span>
+          <span>3. Evidence Locker</span>
+        </button>
+        <button class="nav-item" data-tab="ai-assistant" onclick="switchLeftTab('ai-assistant')">
+          <span class="nav-item-icon">🤖</span>
+          <span>4. AI Assistant</span>
+        </button>
+        <button class="nav-item" data-tab="vehicle-track" onclick="switchLeftTab('vehicle-track')">
+          <span class="nav-item-icon">🚗</span>
+          <span>5. Vehicle Track</span>
+        </button>
+        <button class="nav-item" data-tab="emergency-corridor" onclick="switchLeftTab('emergency-corridor')">
+          <span class="nav-item-icon">🚨</span>
+          <span>6. AI Emergency Corridor</span>
+        </button>
+        <button class="nav-item" data-tab="doc-ocr" onclick="switchLeftTab('doc-ocr')">
+          <span class="nav-item-icon">📄</span>
+          <span>7. DOC OCR</span>
+        </button>
+        <button class="nav-item" data-tab="operational-history" onclick="switchLeftTab('operational-history')">
+          <span class="nav-item-icon">⛓️</span>
+          <span>8. Operational History</span>
+        </button>
+        <button class="nav-item" data-tab="settings" onclick="switchLeftTab('settings')">
+          <span class="nav-item-icon">⚙️</span>
+          <span>9. Settings</span>
+        </button>
+      </aside>
+
+      <!-- RIGHT SIDE CONTENT AREA (WHITE BACKGROUND STRICTLY) -->
+      <main class="right-content-workspace">
+
+        <!-- =========================================================
+             TAB 0: SUSPECT SEARCH & INTELLIGENCE DOSSIER
+             Hidden by default: No suspect details rendered until searched
+             ========================================================= -->
+        <div id="tab-suspect-search" class="tab-content-pane">
+          <div class="suspect-search-hero-box">
+            <div class="search-hero-icon-ring">
+              <span class="search-hero-icon">🔍</span>
+            </div>
+            <h2 class="search-hero-title">SUSPECT SEARCH</h2>
+            <p class="search-hero-subtitle">Search National Intelligence Dossiers across CCTNS, ICJS, State Crime Records, and Forensic Ledgers</p>
+            
+            <div class="suspect-search-input-card">
+              <label for="central-suspect-search-input" class="search-box-label">Search for a suspect</label>
+              <div class="search-input-combo">
+                <input type="text" id="central-suspect-search-input" class="central-search-input" placeholder="Enter suspect name..." autocomplete="off">
+                <button type="button" id="central-search-submit-btn" class="central-search-btn" onclick="triggerCentralSuspectSearch()">SEARCH</button>
+              </div>
+              <p class="search-instruction-neutral">Search for a suspect to view available information.</p>
+            </div>
+          </div>
+
+          <!-- Dynamic Results Area: Empty by default! -->
+          <div id="suspect-search-results-area" class="suspect-search-results-container"></div>
+        </div>
+
+        <!-- =========================================================
+             TAB 1: NETWORK GRAPH & THREAT RADAR
+             ========================================================= -->
+        <div id="tab-network-graph" class="tab-content-pane hidden">
+          <div class="graph-top-banner">
+            <div>
+              <h3 id="graph-suspect-title" style="color:#0a192f; font-size:1.15rem;">Link Analysis Graph</h3>
+              <p style="font-size:0.8rem; color:#64748b;">Visualizing interconnected nodes: Suspect, Associates, Phone intercepts, Locations, Weapons, Vehicles, and Syndicates.</p>
+            </div>
+            <div style="font-size:0.75rem; color:#666;">
+              💡 <em>Drag nodes to rearrange. Click any node to inspect intelligence dossier.</em>
+            </div>
+          </div>
+
+          <div class="graph-viewport-wrapper">
+            <!-- Canvas / Vis.js Target Container -->
+            <div id="network-graph-canvas"></div>
+
+            <!-- Side Entity Inspector Card -->
+            <div id="entity-inspector"></div>
+
+            <!-- Threat Radar in Picture-in-Picture (PiP) on Bottom Right -->
+            <div class="threat-radar-pip" onclick="openThreatRadarFullScreen()" title="Click to expand Threat Radar to Full Screen GPS Tactical Map">
+              <div class="radar-sweep-line"></div>
+              <div class="radar-pip-inner">
+                <div style="font-size:1.2rem;">📡</div>
+                <div class="radar-pip-title">THREAT RADAR</div>
+                <div id="threat-radar-label" style="font-size:0.6rem;">Grid Active</div>
+                <div id="threat-radar-risk" style="color:#ff1744; font-weight:bold;">94% Risk</div>
+                <div class="radar-expand-hint">[Click to Expand]</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Legend -->
+          <div class="graph-legend">
+            <div class="legend-item"><span class="legend-dot" style="background:#d32f2f;"></span> Suspect</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#f57c00;"></span> Co-conspirator / Person</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#0288d1;"></span> Phone / Wiretap</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#7b1fa2;"></span> Location / Crime Scene</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#c62828;"></span> Weapon Entity</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#2e7d32;"></span> Vehicle Asset</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#00796b;"></span> Criminal Syndicate</div>
+          </div>
+        </div>
+
+        <!-- =========================================================
+             TAB 2: CASE MANAGEMENT
+             ========================================================= -->
+        <div id="tab-case-management" class="tab-content-pane hidden">
+          <div class="pane-title-row">
+            <h3>Case Management & Tactical Operations</h3>
+          </div>
+
+          <div class="cards-grid-2col">
+            <!-- Active Leads & Quick Messages -->
+            <div class="forensic-card">
+              <h4>Active Lead Alerts & Quick Intercepts</h4>
+              <div id="cm-leads-list"></div>
+            </div>
+
+            <!-- Case Timelines -->
+            <div class="forensic-card">
+              <h4>Structured Case Timelines</h4>
+              <div id="cm-timelines-list"></div>
+            </div>
+
+            <!-- Weapon Match -->
+            <div class="forensic-card">
+              <h4>Forensic Ballistics & Weapon Match</h4>
+              <div id="cm-weapon-details"></div>
+            </div>
+
+            <!-- Tactical Dispatch -->
+            <div class="forensic-card">
+              <h4>Tactical Dispatch: Target Coordinates & Asset Allocation</h4>
+              <div id="cm-dispatch-details"></div>
+            </div>
+          </div>
+
+          <!-- Evidence Portal Dropzone -->
+          <div class="forensic-card" style="border: 2px dashed #90caf9; text-align: center; padding: 2rem; background: #f0f7ff;">
+            <div style="font-size: 2rem;">📁</div>
+            <h4 style="border:none; margin-bottom: 4px;">Evidence Portal: Drop Secure Files Here</h4>
+            <p style="font-size: 0.8rem; color: #555;">Drop cryptographically encrypted forensic logs, wiretap WAVs, ballistics micrographs or PDFs. Files are automatically timestamped and signed with SHA-256 onto the NII Blockchain.</p>
+            <button type="button" class="btn-connect-drone" style="margin-top: 10px;" onclick="alert('Encrypted File Vault Ready:\nSelect files to sign with private key and anchor into Blockchain.')">Select Secure Evidence Files</button>
+          </div>
+
+          <!-- Connect Drones Option -->
+          <div class="forensic-card drone-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h4>🛸 Connect Drones: Local Autonomous Aerial Telemetry</h4>
+              <div id="drone-connection-status"><span style="color:#666; font-size:0.8rem;">Status: Ready to link</span></div>
+            </div>
+            <p style="font-size: 0.82rem; color: #475569;">
+              Connect local aerial surveillance drones through Bluetooth BLE 5.3 & Wi-Fi 6 Mesh. Drones continuously broadcast GPS position, altitude, and ID number, and quickly beam photos and 4K video feeds directly to commander smartphone without needing a cable.
+            </p>
+            <button id="btn-connect-drone" type="button" class="btn-connect-drone" onclick="connectLocalDrone()">
+              📡 Connect Local Drone via Bluetooth / Wi-Fi
+            </button>
+            <div id="drone-telemetry-info"></div>
+          </div>
+        </div>
+
+        <!-- =========================================================
+             TAB 3: EVIDENCE LOCKER
+             ========================================================= -->
+        <div id="tab-evidence-locker" class="tab-content-pane hidden">
+          <div class="pane-title-row">
+            <h3>Evidence Locker & Multimodal Forensic Vault</h3>
+          </div>
+
+          <div class="cards-grid-2col">
+            <!-- Biometric Correlation Engine -->
+            <div class="forensic-card">
+              <h4>Biometric Correlation Engine</h4>
+              <div id="el-biometrics"></div>
+            </div>
+
+            <!-- NLP Extraction Log -->
+            <div class="forensic-card">
+              <h4>NLP Intelligence Extraction Log</h4>
+              <div id="el-nlp-logs"></div>
+            </div>
+
+            <!-- Social Media Intelligence -->
+            <div class="forensic-card">
+              <h4>Social Media & Dark Web Intercepts</h4>
+              <p id="el-social-media" style="font-size: 0.82rem; line-height: 1.5; color: #334155;"></p>
+            </div>
+
+            <!-- Past Criminal Records & History -->
+            <div class="forensic-card">
+              <h4>Past Criminal Records & Judicial History</h4>
+              <p id="el-past-history" style="font-size: 0.82rem; line-height: 1.5; color: #334155;"></p>
+            </div>
+          </div>
+
+          <!-- Geographical Mapping of Crime Scenes -->
+          <div class="forensic-card">
+            <h4>Geographical Mapping of Crime Scenes</h4>
+            <p id="el-geomapping" style="font-size: 0.85rem; font-weight: 600; color: var(--blue-feed); margin-bottom: 0.8rem;"></p>
+            <div style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 4px; padding: 1rem; text-align: center;">
+              <span>🗺️ Geographical spatial cluster calibrated against National Forensic Laboratory GIS servers.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================================================
+             TAB 4: AI ASSISTANT (Neural Co-Pilot)
+             ========================================================= -->
+        <div id="tab-ai-assistant" class="tab-content-pane hidden">
+          <div class="pane-title-row">
+            <h3>Neural Co-Pilot: AI Predictive & Cross-Case Correlation</h3>
+          </div>
+
+          <div class="cards-grid-2col">
+            <div class="forensic-card">
+              <h4>🧠 Predictive Pattern Analysis</h4>
+              <p id="ai-predictive-analysis" style="font-size: 0.85rem; line-height: 1.6; color: #334155;"></p>
+            </div>
+
+            <div class="forensic-card">
+              <h4>🔗 Cross-Case Neural Correlation</h4>
+              <p id="ai-cross-case" style="font-size: 0.85rem; line-height: 1.6; color: #334155;"></p>
+            </div>
+          </div>
+
+          <div class="forensic-card" style="border-left: 4px solid #00e5ff;">
+            <h4>💡 Recommended Tactical Countermeasures</h4>
+            <p id="ai-recommended-actions" style="font-size: 0.88rem; font-weight: 600; color: #0a192f;"></p>
+          </div>
+
+          <!-- Interactive AI Co-pilot Query Box -->
+          <div class="forensic-card">
+            <h4>Query Neural Co-Pilot</h4>
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+              <input type="text" id="ai-copilot-input" class="forensic-input" placeholder="Ask AI: e.g. What is the escape probability or weapon source?" style="flex: 1;">
+              <button type="button" class="btn-connect-drone" style="margin-top: 0;" onclick="alert('Neural Co-Pilot Synthesized Analysis:\nHigh probability (89.2%) of interstate logistical refuge. Interception recommended at toll checkposts.')">Analyze</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================================================
+             TAB 5: VEHICLE TRACK
+             ========================================================= -->
+        <div id="tab-vehicle-track" class="tab-content-pane hidden">
+          <div class="pane-title-row">
+            <h3>Vehicle Track: Suspect Transport Forensics</h3>
+          </div>
+
+          <div id="vt-suspect-vehicle">
+            <!-- Rendered by app.js: vehicle details or "Vehicle not found at crime scene" -->
+          </div>
+        </div>
+
+        <!-- =========================================================
+             TAB 6: AI EMERGENCY CORRIDOR
+             ========================================================= -->
+        <div id="tab-emergency-corridor" class="tab-content-pane hidden">
+          <div class="pane-title-row">
+            <h3>AI Emergency Corridor: Live Interception Route</h3>
+          </div>
+
+          <div id="ec-corridor-container">
+            <!-- Rendered by app.js based on active year logic -->
+          </div>
+        </div>
+
+        <!-- =========================================================
+             TAB 7: DOC OCR
+             ========================================================= -->
+        <div id="tab-doc-ocr" class="tab-content-pane hidden">
+          <div class="pane-title-row">
+            <h3>DOC OCR: Forensic Optical Scanner & Spectral Analyzer</h3>
+          </div>
+
+          <div class="cards-grid-2col">
+            <!-- Scanned Documents -->
+            <div class="forensic-card">
+              <h4>Scanned Identity & Passports</h4>
+              <div id="doc-scanned-list"></div>
+            </div>
+
+            <!-- Personal Details -->
+            <div class="forensic-card">
+              <h4>Personal Demographic Details</h4>
+              <div id="doc-personal-details"></div>
+            </div>
+          </div>
+
+          <!-- Add Fresh Updated Details Section -->
+          <div class="forensic-card" style="border-top: 4px solid var(--blue-feed);">
+            <h4>➕ Add Fresh Updated Forensic Observations (Signs to Blockchain)</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.8rem;">
+              <div class="form-group">
+                <label>Field Name / Parameter</label>
+                <input type="text" id="doc-update-field" class="forensic-input" placeholder="e.g. Current Sighting, New Passport Number">
+              </div>
+              <div class="form-group">
+                <label>Updated Value</label>
+                <input type="text" id="doc-update-value" class="forensic-input" placeholder="e.g. Identified near Chennai Harbor">
+              </div>
+            </div>
+            <div class="form-group" style="margin-top: 0.8rem;">
+              <label>Officer Notes / Justification</label>
+              <textarea id="doc-update-notes" class="forensic-input" rows="2" placeholder="Enter corroborating evidence details..."></textarea>
+            </div>
+            <button type="button" class="btn-connect-drone" style="margin-top: 0.8rem;" onclick="saveUpdatedForensicDetails()">
+              🔒 Save & Append to Immutable Blockchain
+            </button>
+          </div>
+        </div>
+
+        <!-- =========================================================
+             TAB 8: OPERATIONAL HISTORY & BLOCKCHAIN AUDIT
+             ========================================================= -->
+        <div id="tab-operational-history" class="tab-content-pane hidden">
+          <div class="pane-title-row">
+            <h3>Operational History & Immutable Blockchain Audit Trail</h3>
+          </div>
+
+          <p style="font-size: 0.82rem; color: #475569; margin-bottom: 0.8rem;">
+            Every officer interaction, suspect query, and telemetry link is signed with SHA-256 and chained into the NII decentralized forensic ledger under the IT Act & BNS framework.
+          </p>
+
+          <div id="blockchain-audit-container">
+            <!-- Injected by renderBlockchainAuditTable() -->
+          </div>
+        </div>
+
+        <!-- =========================================================
+             TAB 9: SETTINGS
+             ========================================================= -->
+        <div id="tab-settings" class="tab-content-pane hidden">
+          <div class="pane-title-row">
+            <h3>Forensic Portal Settings & Preferences</h3>
+          </div>
+
+          <div class="cards-grid-2col">
+            <div class="forensic-card">
+              <h4>Saved & Starred Cases</h4>
+              <p style="font-size:0.82rem; color:#555;">⭐ Auto Shankar (#9982) - Starred by Sub-Inspector Vijay Salaskar</p>
+              <p style="font-size:0.82rem; color:#555;">⭐ Veerappan (#5509) - Starred by DGP Ajit Doval</p>
+            </div>
+
+            <div class="forensic-card">
+              <h4>Time Management & Session Controls</h4>
+              <p style="font-size:0.82rem; color:#555;">Session Timeout: <strong>30 Minutes</strong> (Automated RBAC Lock)</p>
+              <p style="font-size:0.82rem; color:#555;">Multi-Factor Token: <strong>Active (FIDO2 / Biometric)</strong></p>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       FULL-SCREEN THREAT RADAR / TACTICAL MAP MODAL
+       =================================================================== -->
+  <div id="threat-radar-modal" class="modal-overlay hidden">
+    <div style="background:#ffffff; width:95%; max-width:980px; border-radius:8px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.5);">
+      <div style="background:#0a192f; color:#ffffff; padding:0.8rem 1.2rem; display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <span style="font-size:1.4rem;">🛰️</span>
+          <h3 style="font-size:1.1rem; color:#00e5ff;">TACTICAL THREAT RADAR - SATELLITE GPS INTERCEPTION</h3>
+        </div>
+        <button type="button" class="btn-close-feed" onclick="closeThreatRadarFullScreen()">&times; Contract Radar</button>
+      </div>
+
+      <!-- High Risk Flag Banner -->
+      <div id="radar-flag-banner" style="padding: 0.8rem 1.2rem; background:#ffebee;"></div>
+
+      <!-- Radar Canvas -->
+      <div style="padding: 1rem; background:#0c1b2a;">
+        <canvas id="radar-full-canvas"></canvas>
+      </div>
+
+      <!-- Tactical Coordinates & Actions -->
+      <div style="padding: 1rem 1.2rem; background:#f8fafc; display:flex; justify-content:space-between; align-items:center; font-size:0.85rem;">
+        <div>
+          <div>Target Coordinates: <strong id="radar-target-coords">12.9830° N, 80.2594° E</strong></div>
+          <div>Location Grid: <span id="radar-target-label">Thiruvanmiyur Coastal Grid, Chennai</span></div>
+          <div>Threat Index: <strong id="radar-target-risk" style="color:#d32f2f;">94%</strong></div>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button type="button" class="btn-connect-drone" style="margin: 0; background:#1a73e8;" onclick="const c = window.activeSuspect?.radarCoordinates || {lat:12.9830, lng:80.2594}; window.open('https://www.google.com/maps/dir/?api=1&destination=' + c.lat + ',' + c.lng, '_blank')">🌐 Open in Google Maps Directions</button>
+          <button type="button" class="btn-connect-drone" style="margin: 0; background:#2e7d32;" onclick="alert('Emergency Traffic Signal Locked:\nGreen Corridor engaged along Anna Salai -> Guindy -> ECR. Interception QRT alerted.')">🚨 Engage Green Corridor</button>
+          <button type="button" class="btn-connect-drone" style="margin: 0;" onclick="alert('Drone Reconnaissance Dispatched:\nNII Drone streaming live aerial coordinates to Tactical Command.')">🛸 Dispatch Drone Recon</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       FULL SCREEN DISPLAY MODAL (For Cyber Crimes, Criminal Cases, Civil)
+       =================================================================== -->
+  <div id="fullscreen-display-modal" class="fullscreen-modal hidden">
+    <div id="fullscreen-display-content"></div>
+  </div>
+
+  <!-- ===================================================================
+       FLASH CASE DETAILS MODAL (For Subcategories)
+       =================================================================== -->
+  <div id="flash-case-modal" class="modal-overlay hidden">
+    <div style="background:#ffffff; width:90%; max-width:680px; border-radius:8px; padding:1.5rem; box-shadow:0 15px 35px rgba(0,0,0,0.35);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid #eee; padding-bottom:0.8rem;">
+        <div>
+          <h3 id="modal-case-title" style="color:#0a192f; font-size:1.2rem;">Case Information</h3>
+          <p id="modal-case-subtitle" style="font-size:0.8rem; color:#666;"></p>
+        </div>
+        <button type="button" onclick="closeFlashCaseModal()" style="background:transparent; border:none; font-size:1.5rem; color:#888; cursor:pointer;">&times;</button>
+      </div>
+      <div id="modal-case-body" style="margin-top:1rem; max-height:400px; overflow-y:auto;"></div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       UNIFIED CASE & RECORD DETAILS INSPECTION MODAL
+       =================================================================== -->
+  <div id="nii-record-details-modal" class="modal-overlay hidden" onclick="handleRecordModalBackdropClick(event)">
+    <div class="record-details-modal-box">
+      <!-- Modal Header -->
+      <div class="record-details-modal-header">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <span id="nii-record-modal-icon" style="font-size:1.5rem;">📋</span>
+          <div>
+            <h3 id="nii-record-modal-title" style="margin:0; font-size:1.1rem; color:#ffffff; font-weight:800;">Record Dossier</h3>
+            <span id="nii-record-modal-badge" class="nii-modal-subbadge"></span>
+          </div>
+        </div>
+        <button type="button" class="btn-close-dossier" onclick="closeNiiRecordDetailsModal()">&times;</button>
+      </div>
+      <!-- Modal Body -->
+      <div id="nii-record-modal-body" class="record-details-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       SESSION EXPIRY & RBAC RE-AUTHENTICATION MODAL
+       =================================================================== -->
+  <div id="session-expiry-modal" class="modal-overlay hidden">
+    <div style="background:#ffffff; width:90%; max-width:440px; border-radius:8px; padding:2rem; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.5);">
+      <div style="font-size:3rem; margin-bottom:0.5rem;">🔒</div>
+      <h3 style="color:#b71c1c;">Session Expired (30-Minute Inactivity Lock)</h3>
+      <p style="font-size:0.82rem; color:#555; margin-top:0.4rem;">
+        In compliance with NII IT Cybersecurity Protocol, sessions terminate every 30 minutes. Please enter your Access Key to re-authenticate under your assigned RBAC role.
+      </p>
+      <div class="form-group" style="margin: 1.2rem 0; text-align: left;">
+        <label>Access Key (Operational ID)</label>
+        <input type="password" id="reauth-access-key" class="forensic-input" placeholder="Type your Access Key">
+      </div>
+      <div style="display:flex; gap:0.6rem; justify-content:center;">
+        <button type="button" class="btn-submit-biometric" style="margin: 0; padding:0.6rem 1.2rem;" onclick="reAuthenticateSession()">Re-Authenticate</button>
+        <button type="button" class="btn-logout-small" style="padding:0.6rem 1.2rem; background:#e0e0e0; color:#333;" onclick="handleLogout()">Exit to Login</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       HYPOTHETICAL THREAT SCENARIO DETAILS MODAL
+       =================================================================== -->
+  <div id="hypo-threat-detail-modal" class="modal-overlay hidden">
+    <div style="background:#ffffff; width:92%; max-width:760px; border-radius:8px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.4);">
+      <div style="background:#0a192f; color:#ffffff; padding:1rem 1.4rem; display:flex; justify-content:space-between; align-items:center; border-bottom: 3px solid #d32f2f;">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <span style="font-size:1.3rem;">⚠️</span>
+          <div>
+            <h3 id="hypo-modal-title" style="color:#ffffff; font-size:1.1rem; margin:0;">Threat Scenario Dossier</h3>
+            <span id="hypo-modal-badge" style="font-size:0.75rem; color:#fca5a5; font-weight:600;"></span>
+          </div>
+        </div>
+        <button type="button" onclick="closeHypoThreatDetailModal()" style="background:transparent; border:none; font-size:1.6rem; color:#cbd5e1; cursor:pointer;">&times;</button>
+      </div>
+      <div id="hypo-modal-body" style="padding:1.4rem; max-height:75vh; overflow-y:auto; font-size:0.85rem;"></div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       ADD NEW CASE FILE MODAL (File / FIR Section)
+       =================================================================== -->
+  <div id="add-new-file-modal" class="modal-overlay hidden">
+    <div style="background:#ffffff; width:92%; max-width:720px; border-radius:8px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.4);">
+      <div style="background:#0a192f; color:#ffffff; padding:1rem 1.4rem; display:flex; justify-content:space-between; align-items:center; border-bottom: 3px solid #059669;">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <span style="font-size:1.3rem;">📝</span>
+          <h3 style="color:#ffffff; font-size:1.1rem; margin:0;">Register New Case / FIR Dossier</h3>
+        </div>
+        <button type="button" onclick="closeAddNewFileModal()" style="background:transparent; border:none; font-size:1.6rem; color:#cbd5e1; cursor:pointer;">&times;</button>
+      </div>
+
+      <form id="add-case-file-form" onsubmit="handleCreateCaseFile(event)" style="padding:1.4rem; max-height:78vh; overflow-y:auto;">
+        <div id="file-form-alert" class="error-alert-box hidden" style="margin-bottom:1rem;"></div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label for="new-file-id">File / Case ID <span>*</span></label>
+            <input type="text" id="new-file-id" class="forensic-input" required placeholder="e.g. FIR-2026-NII-884">
+          </div>
+          <div class="form-group">
+            <label for="new-file-date">Date of Filing <span>*</span></label>
+            <input type="date" id="new-file-date" class="forensic-input" required>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 0.8rem;">
+          <label for="new-file-title">File / Case Title <span>*</span></label>
+          <input type="text" id="new-file-title" class="forensic-input" required placeholder="e.g. Operation Western Sky - Contraband Intercept">
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top:0.8rem;">
+          <div class="form-group">
+            <label for="new-file-casetype">Case Classification / Type <span>*</span></label>
+            <select id="new-file-casetype" class="forensic-input" required>
+              <option value="">-- Select Case Type --</option>
+              <option value="Homicide & Violent Crime">Homicide & Violent Crime</option>
+              <option value="Cyber Crime">Cyber Crime</option>
+              <option value="Narcotics & Contraband">Narcotics & Contraband</option>
+              <option value="Economic Fraud & Hawala">Economic Fraud & Hawala</option>
+              <option value="Organised Crime Syndicate">Organised Crime Syndicate</option>
+              <option value="Terrorism & SLL">Terrorism & SLL (Special Laws)</option>
+              <option value="Special Investigation">Special Investigation</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="new-file-priority">Priority / Status <span>*</span></label>
+            <select id="new-file-priority" class="forensic-input" required>
+              <option value="Critical">Critical (Threatcon-1)</option>
+              <option value="High">High Priority</option>
+              <option value="Active Investigation" selected>Active Investigation</option>
+              <option value="Chargesheet Filed">Chargesheet Filed</option>
+              <option value="Under Verification">Under Verification</option>
+              <option value="Permanent Archive">Permanent Archive</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top:0.8rem;">
+          <div class="form-group">
+            <label for="new-file-officer">Investigating Officer <span>*</span></label>
+            <input type="text" id="new-file-officer" class="forensic-input" required placeholder="e.g. Vijay Salaskar (Sub-Inspector)">
+          </div>
+          <div class="form-group">
+            <label for="new-file-department">Department / Station</label>
+            <input type="text" id="new-file-department" class="forensic-input" placeholder="e.g. Special Crime Branch, Chennai">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 0.8rem;">
+          <label for="new-file-description">Case Narrative & Intelligence Summary <span>*</span></label>
+          <textarea id="new-file-description" class="forensic-input" rows="3" required placeholder="Enter key facts, suspect links, seized evidence, and initial forensics..."></textarea>
+        </div>
+
+        <div class="form-group" style="margin-top: 0.8rem;">
+          <label for="new-file-attachment">Case File Attachment (PDF, DOCX, TXT, JPG, PCAP - Max 10MB)</label>
+          <input type="file" id="new-file-attachment" class="forensic-input" accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg,.pcap" onchange="validateAttachmentFile(this)">
+          <small id="attachment-validation-hint" style="display:block; color:#64748b; margin-top:3px;">Supported: Encrypted dossiers, FIR scans, wiretap logs up to 10MB.</small>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1.2rem; border-top:1px solid #eee; padding-top:1rem;">
+          <button type="button" class="btn-logout-small" style="background:#e2e8f0; color:#334155; padding:0.6rem 1.2rem;" onclick="closeAddNewFileModal()">Cancel</button>
+          <button type="submit" class="btn-submit-biometric" style="background:#059669; margin:0; padding:0.6rem 1.4rem;">💾 Register & Anchor to Ledger</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       VIEW CASE FILE MODAL (Details View)
+       =================================================================== -->
+  <div id="view-case-file-modal" class="modal-overlay hidden">
+    <div style="background:#ffffff; width:92%; max-width:680px; border-radius:8px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.4);">
+      <div style="background:#0a192f; color:#ffffff; padding:1rem 1.4rem; display:flex; justify-content:space-between; align-items:center; border-bottom: 3px solid #0284c7;">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <span style="font-size:1.3rem;">📂</span>
+          <div>
+            <h3 id="view-file-title" style="color:#ffffff; font-size:1.1rem; margin:0;">Case File Record</h3>
+            <span id="view-file-id-badge" style="font-size:0.75rem; color:#7dd3fc; font-weight:600;"></span>
+          </div>
+        </div>
+        <button type="button" onclick="closeViewCaseFileModal()" style="background:transparent; border:none; font-size:1.6rem; color:#cbd5e1; cursor:pointer;">&times;</button>
+      </div>
+      <div id="view-file-body" style="padding:1.4rem; max-height:75vh; overflow-y:auto; font-size:0.85rem;"></div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       CDR TRACE MODAL (Cell Tower Triangulation)
+       =================================================================== -->
+  <div id="cdr-trace-modal" class="modal-overlay hidden">
+    <div style="background:#ffffff; width:92%; max-width:640px; border-radius:8px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.4);">
+      <div style="background:#0a192f; color:#ffffff; padding:0.9rem 1.2rem; display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #0284c7;">
+        <h3 id="cdr-modal-title" style="color:#ffffff; font-size:1rem; margin:0;">📞 Call Intercept & BTS Azimuth Trace</h3>
+        <button type="button" onclick="closeCdrTraceModal()" style="background:transparent; border:none; font-size:1.5rem; color:#cbd5e1; cursor:pointer;">&times;</button>
+      </div>
+      <div id="cdr-modal-body" style="padding:1.2rem; font-size:0.85rem;"></div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       NII UNIFIED RECORD / CASE DOSSIER MODAL
+       =================================================================== -->
+  <div id="nii-record-details-modal" class="modal-overlay hidden" onclick="handleRecordModalBackdropClick(event)">
+    <div class="record-details-modal-box" onclick="event.stopPropagation()">
+      <div class="record-details-modal-header">
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <span id="nii-record-modal-icon" style="font-size:1.4rem;">📋</span>
+          <div>
+            <h3 id="nii-record-modal-title" style="color:#ffffff; font-size:1.1rem; margin:0; font-weight:700;">Record Dossier</h3>
+            <span id="nii-record-modal-badge" class="nii-modal-subbadge"></span>
+          </div>
+        </div>
+        <button type="button" class="btn-close-dossier" onclick="closeNiiRecordDetailsModal()" title="Close Dossier (Esc)">&times;</button>
+      </div>
+      <div id="nii-record-modal-body" class="record-details-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       NII TOAST NOTIFICATION CONTAINER
+       =================================================================== -->
+  <div id="nii-toast-container" class="nii-toast-container"></div>
+
+  <!-- JavaScript Modules in Dependency Order -->
+  <script src="js/stations-data.js"></script>
+  <script src="js/suspects-data.js"></script>
+  <script src="js/blockchain-audit.js"></script>
+  <script src="js/case-intelligence-data.js"></script>
+  <script src="js/feeds-controller.js"></script>
+  <script src="js/network-graph.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/case-controllers.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
